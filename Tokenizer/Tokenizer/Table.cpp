@@ -14,7 +14,7 @@ int KeyTable::get_index(string keyName)
    auto iter = lower_bound(values->begin(), values->end(), keyName);
    if (iter == values->end())
       throw invalid_argument("Such key does not exist.");
-   return iter - values->begin();
+   return distance(values->begin(), iter);
 }
 
 string KeyTable::get_elem(int index)
