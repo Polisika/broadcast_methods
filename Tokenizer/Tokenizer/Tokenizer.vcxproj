@@ -24,6 +24,7 @@
     <ProjectGuid>{453c8dcb-f233-4016-a2e9-1b638f9eb330}</ProjectGuid>
     <RootNamespace>Tokenizer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Tables</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
