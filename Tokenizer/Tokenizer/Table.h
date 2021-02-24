@@ -19,119 +19,77 @@
 #include <iomanip>
 using namespace std;
 
+enum TableType { OPERATIONS, DELIMETERS, KEYWORDS };
+
 template<typename T>
 class VariableTable
 {
 private:
 	// »дентификатор, тип, присвоено ли значение и значение
 	vector<tuple<string, string, bool, T>>* table;
+    const string TNAMEdef = "int";
+    const string TNAMEwithoutValue = "NULL";
 public:
-	string TNAME = "int";
-	int (*comparator)(tuple<string, string, bool, T> left, tuple<string, string, bool, T> right) =
-		[](tuple<string, string, bool, T> left, tuple<string, string, bool, T> right)
-	{
-		string l = get<0>(left);
-		string r = get<0>(right);
-
-		if (l < r)
-			return 1;
-		else if (l > r)
-			return -1;
-		else
-			return 0;
-	};
 
 	// √енерирует таблицу из файла
-
 	VariableTable(istream& in)
 	{
 		throw exception("Not released");
 	}
 
 	// —оздать пустую таблицу
-
 	VariableTable()
 	{
 		table = new vector<tuple<string, string, bool, T>>();
 	}
 
-	bool add_element(string name, T value)
+	int add_element(string name, T value)
 	{
-		if (!is_in_table(name))
+        int index;
+		if ((index = get_index(name)) == -1)
 		{
-			// »щем позицию в отсортированном массиве
-			auto elem = make_tuple(name, TNAME, true, value);
-			int i;
-			for (i = 0; i < table->size() && comparator(elem, table->at(i)) != 1; i++);
-			table->insert(table->begin() + i, elem);
-
-			return true;
+            table->push_back(make_tuple(name, TNAMEdef, true, value));
+			return table->size() - 1;
 		}
 		else
-			return false;
+			return index;
 	}
 
-	bool add_element(string name)
+	int add_element(string name)
 	{
-		if (!is_in_table(name))
+        int index;
+		if ((index = get_index(name)) == -1)
 		{
-			// »щем позицию в отсортированном массиве
-			int i;
-			auto elem = make_tuple(name, TNAME, false, 0);
-			for (i = 0; i < table->size() && comparator(elem, table->at(i)) != 1; i++);
-			table->insert(table->begin() + i, make_tuple(name, TNAME, false, 0));
-			return true;
+            table->push_back(make_tuple(name, TNAMEwithoutValue, false, 0));
+            return table->size() - 1;
 		}
 		else
-			return false;
+			return index;
 	}
 
-	bool add_element(tuple<string, string, bool, T> elem)
+	int add_element(tuple<string, string, bool, T> elem)
 	{
-		if (!is_in_table(elem))
-		{
-			// »щем позицию в отсортированном массиве
-			int i;
-			for (i = 0; i < table->size() && comparator(elem, table->at(i)) != 1; i++);
-			table->insert(table->begin() + i, elem);
-			return true;
-		}
-		else
-			return false;
-	}
-
-	bool is_in_table(tuple<string, string, bool, T> elem)
-	{
-		return binary_search(table->begin(), table->end(), elem, comparator);
-	}
-
-	bool is_in_table(string elem)
-	{
-		return binary_search(table->begin(), table->end(), make_tuple(elem, TNAME, false, 0), comparator);
-	}
-
-	bool remove_element(string elem)
-	{
-		auto iter = lower_bound(table->begin(), table->end(), make_tuple(elem, TNAME, false, 0), comparator);
-		if (iter == table->end())
-			return false;
-		else
-			table->erase(iter, iter + 1);
-		return true;
+        int index;
+        if ((index = get_index(get<0>(elem))) == -1)
+        {
+            table->push_back(elem);
+            return table->size() - 1;
+        }
+        else
+            return index;
 	}
 
 	int get_index(string elem)
 	{
-		auto iter = lower_bound(table->begin(), table->end(), make_tuple(elem, TNAME, false, 0));
-		if (iter == table->end())
-			return -1;
-		else
-			return distance(table->begin(), iter);
+        for (int i = 0; i < table->size(); i++)
+            if (get<0>(table->at(i)) == elem)
+                return i;
+        return -1;
 	}
 
 	tuple<string, string, bool, T>& get_elem(string elem)
 	{
-		auto iter = lower_bound(table->begin(), table->end(), make_tuple(elem, TNAME, false, 0));
+		auto iter = lower_bound(table->begin(), table->end(), make_tuple(elem, TNAMEdef, false, 0));
 		if (iter == table->end())
 			throw invalid_argument("Such element does not exist");
 		else
@@ -146,12 +104,19 @@ public:
 			throw invalid_argument("Index out of range");
 	}
 
-	bool set_elem(string name, T value)
+	int set_elem(string name, T value)
 	{
-		auto old_value_index = get_index(name);
-		table->at(old_value_index) = make_tuple(name, TNAME, true, value);
+		int index = get_index(name);
+		table->at(index) = make_tuple(name, TNAMEdef, true, value);
 		return true;
 	}
+
+    int set_type(string name, string type)
+    {
+        int index = get_index(name);
+        table->at(index) = make_tuple(name, type, get<2>(table->at(index)), get<3>(table->at(index)));
+        return index;
+    }
 
 	void display(ostream& out)
 	{
@@ -179,17 +144,11 @@ public:
 
 class KeyTable
 {
-	/*
-	2)	ѕодмножество €зыка —++ включает:
-	Х	данные типа int;
-	Х	инструкции описани€ переменных;
-	Х	операторы присваивани€, while любой вложенности и в любой последовательности;
-	Х	операции  +, Ц , < =, >= , < , >.
-	*/
 private:
 	vector<string>* values;
 public:
-	KeyTable();
+    TableType type;
+	KeyTable(TableType type);
 	void display(ostream& out);
 	bool is_in_table(string keyName);
 	int get_index(string keyName);

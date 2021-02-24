@@ -3,7 +3,7 @@
 
 void testKeyTable()
 {
-   KeyTable* table = new KeyTable();
+   KeyTable* table = new KeyTable(TableType::KEYWORDS);
    table->display(cout);
    cout << "Get element 2: " << table->get_elem(2) << endl;
    cout << table->get_index("int") << " index for \'int\'" << endl;
@@ -28,7 +28,6 @@ void testVariableTable()
     {
         cout << e.what() << endl << endl;
     }
-    cout << "myVariable in table? " << (table->is_in_table("myVariable") ? "yes" : "no") << endl;
     cout << "Try override myVariable with value 4: " << (table->add_element("myVariable", 4) ? "success" : "failed") << endl;
     cout << "myVariable value: " << get<3>(table->get_elem("myVariable")) << endl;
     cout << "Try add some elements: " << endl;
@@ -39,7 +38,9 @@ void testVariableTable()
     table->display(cout);
     cout << "Set myVariable to 10: " << (table->set_elem("myVariable", 10) ? "Success" : "Failed") << endl;
     cout << "myVariable value: " << get<3>(table->get_elem("myVariable")) << endl;
-    cout << "Try remove from table: " << (table->remove_element("myVariable") ? "Success" : "Failed") << endl;
+    table->add_element("New_variable");
+    table->display(cout);
+    cout << table->set_type("New_variable", "int") << endl;
     table->display(cout);
     table->~VariableTable();
 }
@@ -51,4 +52,7 @@ int main()
     cout << "________________________________________________" << endl;
     cout << "Test VariableTable" << endl;
     testVariableTable();
+
+
+    system("pause");
 }
