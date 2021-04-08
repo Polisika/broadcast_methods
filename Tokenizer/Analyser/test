@@ -1,0 +1,10 @@
+int main()
+{
+	int i = 1;
+	int b = 11;
+	while(i < b)
+	{
+		i = b;
+		b = i + 1;
+	}
+}

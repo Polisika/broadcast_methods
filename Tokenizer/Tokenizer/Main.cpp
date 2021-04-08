@@ -44,15 +44,16 @@ void testVariableTable()
     table->display(cout);
     table->~VariableTable();
 }
-
-int main()
-{
-    cout << "Test KeyTable:" << endl;
-    testKeyTable();
-    cout << "________________________________________________" << endl;
-    cout << "Test VariableTable" << endl;
-    testVariableTable();
-
-
-    system("pause");
-}
+//
+//int _main()
+//{
+//    cout << "Test KeyTable:" << endl;
+//    testKeyTable();
+//    cout << "________________________________________________" << endl;
+//    cout << "Test VariableTable" << endl;
+//    testVariableTable();
+//
+//
+//    system("pause");
+//    return 0;
+//}
